@@ -1,0 +1,8 @@
+id: RELMAN
+version: "0.1"
+
+repositories :
+  - name: "Project Repo 1"
+    path: "relman_test1"
+  - name: "Project Repo 2"
+    path: "relman_test2"
