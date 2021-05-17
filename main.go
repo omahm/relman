@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net/http"
 
 	"gopkg.in/yaml.v2"
 )
@@ -22,11 +23,14 @@ type Repositories struct {
 func main() {
 	projectYaml := ProjectYaml{}
 
-	fileName := "relman_projects.yaml"
-
-	yamlFile, err := ioutil.ReadFile(fileName)
+	resp, err := http.Get("https://raw.githubusercontent.com/omahm/relman/main/relman_project.yaml")
 	if err != nil {
-		log.Printf("Reading of project file failed with:  #%v ", err)
+		log.Fatalln("Unable to fetch YAML file: %v", err)
+	}
+
+	yamlFile, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatalln(err)
 	}
 
 	err = yaml.Unmarshal(yamlFile, &projectYaml)
