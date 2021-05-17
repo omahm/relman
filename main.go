@@ -38,5 +38,8 @@ func main() {
 		log.Fatalf("Unable to parse YAML file: %v", err)
 	}
 
-	fmt.Printf("%+v\n", projectYaml)
+	for _, repo := range projectYaml.Repositories {
+		fmt.Printf("Repo: %v @ %v \n", repo.Name, repo.Path)
+	}
+
 }
