@@ -6,12 +6,12 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
-	"syscall"
 
 	"github.com/google/go-github/v35/github"
-	"golang.org/x/crypto/ssh/terminal"
+	"github.com/joho/godotenv"
 	"golang.org/x/oauth2"
 	"gopkg.in/yaml.v2"
 )
@@ -30,6 +30,12 @@ type Repositories struct {
 const repoOwner string = "omahm"
 
 func main() {
+
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	projectYaml := ProjectYaml{}
 
 	resp, err := http.Get("https://raw.githubusercontent.com/omahm/relman/main/relman_project.yaml")
@@ -47,9 +53,11 @@ func main() {
 		log.Fatalf("Unable to parse YAML file: %v", err)
 	}
 
-	fmt.Print("GitHub Token: ")
-	byteToken, _ := terminal.ReadPassword(int(syscall.Stdin))
-	token := string(byteToken)
+	token := os.Getenv("GITHUB_TOKEN")
+
+	if len(token) < 1 {
+		log.Fatalf("Github token doesn't appear to be set. Please ensure a valid token is present in your .env file")
+	}
 
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(
@@ -78,8 +86,6 @@ func main() {
 
 		fmt.Printf("Current release: %v \n", current_release_tag)
 		fmt.Printf("New release: %v \n", new_release_tag)
-
-		fmt.Printf("Repo: %v @ %v (%v) \n", repo.Name, repo.Path, release.GetTagName())
 	}
 
 }
